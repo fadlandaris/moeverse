@@ -1,4 +1,4 @@
-import { getDictionary, type Locale } from '@/i18n/getDictionary'
+import { defaultLocale, getDictionary, hasLocale } from '@/i18n/getDictionary'
 import Hero from '@/components/marketing/Hero'
 
 const Home = async ({
@@ -7,7 +7,7 @@ const Home = async ({
   params: Promise<{ locale: string }>
 }) => {
   const { locale } = await params
-  const validLocale: Locale = locale === 'en' ? 'en' : 'id'
+  const validLocale = hasLocale(locale) ? locale : defaultLocale
   const dict = await getDictionary(validLocale)
   const dictData = dict.marketing.home
 

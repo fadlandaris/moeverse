@@ -4,7 +4,7 @@
 
 ## Project Overview
 
-Fullstack Next.js 16 application (BFF — Backend for Frontend). Frontend and backend live in the same codebase. API routes at `/api/*` serve as the backend. PostgreSQL database via Prisma ORM. Multilingual (Indonesian + English).
+Fullstack Next.js 16 application (BFF — Backend for Frontend). Frontend and backend live in the same codebase. API routes at `/api/*` serve as the backend. PostgreSQL database via Prisma ORM. Multilingual (Indonesian + English + Japanese).
 
 **Runtime**: Node.js (not Edge). Next.js 16 defaults Proxy (formerly Middleware) to Node.js runtime.
 
@@ -167,7 +167,7 @@ app/
 │   └── super-admin/              # URL prefix: /super-admin
 │       └── dashboard/
 │           └── page.tsx
-├── [locale]/                     # Locale-based routes (en / id)
+├── [locale]/                     # Locale-based routes (en / id / ja)
 │   ├── layout.tsx                → LocaleLayout (loads i18n dictionary)
 │   └── (marketing)/              # Route group — public marketing pages
 │       └── (home)/
@@ -245,10 +245,10 @@ export const useMyHook = () => { ... }
 ### `i18n/`
 Everything related to translations.
 
-- `getDictionary.ts` — loads the correct JSON dictionary by locale, exports `Locale` type, `Dictionary` type, `getDictionary()` async function, `hasLocale()` type guard
+- `getDictionary.ts` — loads the correct JSON dictionary by locale, exports `locales`, `defaultLocale`, `Locale` type, `Dictionary` type, `getDictionary()` async function, `hasLocale()` type guard
 - `getLang.ts` — converts a pathname from one locale to another
 
-Supported locales: `en`, `id`. Default: `en`.
+Supported locales: `en`, `id`, `ja`. Default: `en`. The list lives in `locales` (`getDictionary.ts`); adding a locale means updating `locales`, the `dictionaries` map, and a new `messages/<locale>.json`.
 
 ### `layouts/`
 Layout wrapper components passed to `layout.tsx` files. Each represents a distinct section of the app.
@@ -374,8 +374,9 @@ Translation JSON files, one per locale.
 
 ```
 messages/
-├── en.json    # English
-└── id.json    # Indonesian
+├── en.json    # English (source of truth for the `Dictionary` type)
+├── id.json    # Indonesian
+└── ja.json    # Japanese
 ```
 
 Structure mirrors the app sections:
@@ -772,7 +773,7 @@ export const useProjectActivitySse = (projectId: string) => {
 3. `/super-admin/auth/*` → pass through (no processing)
 4. Protected tenant paths (`/dashboard`, `/settings`, etc.) → check `refresh_token` cookie existence → redirect to `/auth/login` if missing
 5. Protected super-admin paths (`/super-admin`, etc.) → check `refresh_token` cookie existence → redirect to `/super-admin/auth/login` if missing
-6. Everything else → check for locale prefix (`/en/`, `/id/`) → redirect to `/{detected-locale}{path}` if missing
+6. Everything else → check for locale prefix (`/en/`, `/id/`, `/ja/`) → redirect to `/{detected-locale}{path}` if missing
 
 **Why check `refresh_token` and not the access token:**
 The access token lives in Zustand (memory) — it is never in a cookie, so proxy cannot read it. The proxy only checks for `refresh_token` cookie *existence* (not validity). Actual token validation (DB lookup + expiry check) happens inside each API route handler via `validateAccessToken`.
@@ -797,7 +798,7 @@ The cookie name `refresh_token` must match exactly what `/api/auth/login` and `/
 // In a server component page
 const Home = async ({ params }: { params: Promise<{ locale: string }> }) => {
   const { locale } = await params
-  const validLocale: Locale = locale === 'en' ? 'en' : 'id'
+  const validLocale = hasLocale(locale) ? locale : defaultLocale
   const dict = await getDictionary(validLocale)
   return <Hero dict={dict.marketing.home} />
 }

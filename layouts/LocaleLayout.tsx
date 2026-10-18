@@ -1,4 +1,4 @@
-import { getDictionary, type Locale } from "@/i18n/getDictionary";
+import { defaultLocale, hasLocale } from "@/i18n/getDictionary";
 import MarketingLayout from "@/layouts/MarketingLayout";
 import LangToggle from "@/components/reusable/LangToggle";
 
@@ -10,8 +10,7 @@ const LocaleLayout = async ({
   params: Promise<{ locale: string }>;
 }) => {
   const { locale } = await params;
-  const validLocale: Locale = locale === "en" ? "en" : "id";
-  const dict = await getDictionary(validLocale);
+  const validLocale = hasLocale(locale) ? locale : defaultLocale;
 
   return (
     <MarketingLayout>

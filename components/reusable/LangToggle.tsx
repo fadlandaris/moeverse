@@ -2,15 +2,14 @@
 
 import { usePathname, useRouter } from 'next/navigation'
 import { getLang } from '@/i18n/getLang'
+import { locales } from '@/i18n/getDictionary'
 import type { Locale } from '@/i18n/getDictionary'
-
-const LOCALES: Locale[] = ['en', 'id']
 
 const LangToggle = ({ currentLocale }: { currentLocale: Locale }) => {
   const pathname = usePathname()
   const router = useRouter()
 
-  const nextLocale = LOCALES.find((l) => l !== currentLocale) ?? 'en'
+  const nextLocale = locales[(locales.indexOf(currentLocale) + 1) % locales.length]
 
   const handleSwitch = () => {
     const newPath = getLang(pathname, currentLocale, nextLocale)

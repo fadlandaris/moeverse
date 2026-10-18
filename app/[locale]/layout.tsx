@@ -1,4 +1,8 @@
 import LocaleLayout from "@/layouts/LocaleLayout";
+import { locales } from "@/i18n/getDictionary";
+
+export const generateStaticParams = () =>
+  locales.map((locale) => ({ locale }));
 
 const layout = ({
   children,

@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, Geist_Mono } from "next/font/google";
 import "../styles/globals.css"
 import QueryProvider from "@/providers/QueryProviders";
 import ThemeProvider from "@/providers/ThemeProvider";
 import ThemeToggle from "@/components/reusable/ThemeToggle";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const jakartaSans = Plus_Jakarta_Sans({
+  variable: "--font-jakarta-sans",
   subsets: ["latin"],
 });
 
@@ -24,7 +24,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => (
   <html
     lang="en"
     suppressHydrationWarning
-    className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    className={`${jakartaSans.variable} ${geistMono.variable} h-full antialiased`}
   >
     <body className="min-h-full flex flex-col">
       <ThemeProvider>
